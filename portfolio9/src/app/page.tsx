@@ -28,7 +28,7 @@ export default function Home() {
     <div className="min-h-screen flex flex-col">
       {/* Navigation */}
       <nav className="w-full py-6 px-8 md:px-16 lg:px-24 bg-white">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
+        <div className="max-w-[800px] mx-auto flex justify-between items-center">
           {/* Left side - Name and nav links */}
           <div className="flex items-center">
             {/* Nikita Petrov group */}
