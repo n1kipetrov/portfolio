@@ -13,6 +13,7 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle
 } from "@/components/ui/navigation-menu";
+import LanguageSwitcher from "@/components/ui/language-switcher";
 
 export default function Home() {
   const [activeItem, setActiveItem] = useState("work");
@@ -132,14 +133,15 @@ export default function Home() {
             </div>
           </div>
           
-          {/* Right side - Copy email button */}
-          <div className="flex items-center">
+          {/* Right side - Copy email button and Language Switcher */}
+          <div className="flex items-center gap-2">
             <Button 
               onClick={handleCopyEmail}
-              className="font-[family-name:var(--font-geist-sans)] text-[15px] leading-none bg-white text-[#697077] border border-[#f4f4f4] font-normal hover:bg-[#fafafa] hover:text-[#343a3f] hover:border-[#fafafa] transition-all duration-200 h-[36px] p-0 px-[12px] flex items-center justify-center shadow-none rounded-[12px] overflow-hidden cursor-pointer"
+              className="font-[family-name:var(--font-geist-sans)] text-[15px] leading-[150%] bg-white text-[#697077] border border-[#f4f4f4] font-normal hover:bg-[#fafafa] hover:text-[#343a3f] hover:border-[#fafafa] transition-all duration-200 h-[36px] p-0 px-[12px] flex items-center justify-center shadow-none rounded-[12px] overflow-hidden cursor-pointer"
             >
               <span className="inline-flex items-center justify-center">Copy email</span>
             </Button>
+            <LanguageSwitcher />
           </div>
             
           {/* Mobile menu button */}
