@@ -15,9 +15,10 @@ import {
 } from "@/components/ui/navigation-menu";
 import LanguageSwitcher from "@/components/ui/language-switcher";
 import { useLocalization } from "@/lib/localization/LocalizationContext";
+import { getLocalizedPath } from "@/lib/localization/helpers";
 
 export default function Home() {
-  const { t, isLoading } = useLocalization();
+  const { t, isLoading, language } = useLocalization();
   const [activeItem, setActiveItem] = useState("work");
   
   const handleCopyEmail = () => {
@@ -37,7 +38,7 @@ export default function Home() {
             {/* Nikita Petrov group */}
             <div className="flex mr-[32px]">
               <Link
-                href="/"
+                href={getLocalizedPath("/", language)}
                 className="text-[15px] leading-[150%] transition-colors duration-200 h-[36px] flex items-center justify-center px-[12px] rounded-[12px] font-normal text-[#343a3f] bg-white hover:bg-[#fafafa]"
                 onClick={() => setActiveItem("home")}
               >
@@ -54,7 +55,7 @@ export default function Home() {
                     <NavigationMenuItem key={item} className="mx-0 px-0">
                       <NavigationMenuLink asChild>
                         <Link 
-                          href={`/${item}`}
+                          href={getLocalizedPath(`/${item}`, language)}
                           onClick={() => setActiveItem(item)}
                           className="!px-[12px] text-[15px] leading-[150%] font-normal text-[#343a3f] transition-colors duration-200 h-[36px] flex items-center justify-center !rounded-[12px] bg-white hover:!bg-[#fafafa] mx-0"
                         >
@@ -74,7 +75,7 @@ export default function Home() {
                         {/* Writing */}
                         <NavigationMenuLink asChild>
                           <Link
-                            href="/writing"
+                            href={getLocalizedPath("/writing", language)}
                             className="block p-3 hover:!bg-[#fafafa] rounded-[8px] transition-colors duration-200"
                             onClick={() => setActiveItem("writing")}
                           >
@@ -93,7 +94,7 @@ export default function Home() {
                         {/* Volunteering */}
                         <NavigationMenuLink asChild>
                           <Link
-                            href="/volunteering"
+                            href={getLocalizedPath("/volunteering", language)}
                             className="block p-3 hover:!bg-[#fafafa] rounded-[8px] transition-colors duration-200"
                             onClick={() => setActiveItem("volunteering")}
                           >
@@ -112,7 +113,7 @@ export default function Home() {
                         {/* Testimonials */}
                         <NavigationMenuLink asChild>
                           <Link
-                            href="/testimonials"
+                            href={getLocalizedPath("/testimonials", language)}
                             className="block p-3 hover:!bg-[#fafafa] rounded-[8px] transition-colors duration-200"
                             onClick={() => setActiveItem("testimonials")}
                           >

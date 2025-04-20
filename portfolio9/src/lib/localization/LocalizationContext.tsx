@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { client } from '../../sanity/lib/client';
+import { usePathname, useRouter } from 'next/navigation';
 
 type Language = "en" | "ru";
 
@@ -32,8 +33,59 @@ export const LocalizationProvider = ({ children }: { children: React.ReactNode }
   const [language, setLanguage] = useState<Language>("en");
   const [translations, setTranslations] = useState<Translations>({});
   const [isLoading, setIsLoading] = useState(true);
+  
+  const pathname = usePathname();
+  const router = useRouter();
 
-  // Fetch translations from Sanity
+  // Detect language from URL
+  useEffect(() => {
+    if (pathname) {
+      const segments = pathname.split('/').filter(Boolean);
+      const potentialLocale = segments[0];
+      
+      if (potentialLocale === 'ru') {
+        setLanguage('ru');
+      } else {
+        setLanguage('en');
+      }
+    }
+  }, [pathname]);
+
+  // This function now handles changing the URL as well
+  const handleLanguageChange = (lang: Language) => {
+    // Set cookie for middleware to use
+    document.cookie = `language=${lang}; path=/; max-age=31536000`; // 1 year
+    
+    // Update local state
+    setLanguage(lang);
+    
+    // Update localStorage for backward compatibility
+    localStorage.setItem("language", lang);
+    
+    // Update URL if needed
+    if (pathname) {
+      const segments = pathname.split('/').filter(Boolean);
+      let newPathname = pathname;
+      
+      if (segments[0] === 'ru' || segments[0] === 'en') {
+        // URL already has a locale, replace it
+        segments.shift();
+        newPathname = segments.length > 0 ? `/${segments.join('/')}` : '/';
+      }
+      
+      // Add new locale prefix if not English (default)
+      if (lang !== 'en') {
+        newPathname = `/${lang}${newPathname === '/' ? '' : newPathname}`;
+      }
+      
+      // Push the new URL without a full page reload
+      if (newPathname !== pathname) {
+        router.push(newPathname);
+      }
+    }
+  };
+
+  // Fetch translations
   useEffect(() => {
     const fetchTranslations = async () => {
       setIsLoading(true);
@@ -69,11 +121,13 @@ export const LocalizationProvider = ({ children }: { children: React.ReactNode }
     fetchTranslations();
   }, []);
 
-  // Load saved language preference
+  // Check localStorage on initial load (client-side only)
   useEffect(() => {
     const savedLanguage = localStorage.getItem("language") as Language;
     if (savedLanguage && (savedLanguage === "en" || savedLanguage === "ru")) {
-      setLanguage(savedLanguage);
+      if (language !== savedLanguage) {
+        handleLanguageChange(savedLanguage);
+      }
     }
   }, []);
 
@@ -85,7 +139,12 @@ export const LocalizationProvider = ({ children }: { children: React.ReactNode }
   };
 
   return (
-    <LocalizationContext.Provider value={{ language, setLanguage, t, isLoading }}>
+    <LocalizationContext.Provider value={{ 
+      language, 
+      setLanguage: handleLanguageChange, 
+      t, 
+      isLoading 
+    }}>
       {children}
     </LocalizationContext.Provider>
   );
