@@ -1,23 +1,16 @@
 "use client";
 
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useState, useEffect } from "react";
+import { useLocalization } from "@/lib/localization/LocalizationContext";
 import { cn } from "@/lib/utils";
 
 export default function LanguageSwitcher() {
-  const [language, setLanguage] = useState("en");
+  const { language, setLanguage } = useLocalization();
   
   const handleLanguageChange = (value: string) => {
-    setLanguage(value);
+    setLanguage(value as "en" | "ru");
     localStorage.setItem("language", value);
   };
-  
-  useEffect(() => {
-    const savedLanguage = localStorage.getItem("language");
-    if (savedLanguage) {
-      setLanguage(savedLanguage);
-    }
-  }, []);
 
   return (
     <Tabs 

@@ -14,8 +14,10 @@ import {
   navigationMenuTriggerStyle
 } from "@/components/ui/navigation-menu";
 import LanguageSwitcher from "@/components/ui/language-switcher";
+import { useLocalization } from "@/lib/localization/LocalizationContext";
 
 export default function Home() {
+  const { t, isLoading } = useLocalization();
   const [activeItem, setActiveItem] = useState("work");
   
   const handleCopyEmail = () => {
@@ -48,15 +50,15 @@ export default function Home() {
               <NavigationMenu>
                 <NavigationMenuList className="space-x-0 flex gap-0">
                   {/* For the regular navigation links */}
-                  {["About", "Awards", "Resume", "Contact"].map((item) => (
-                    <NavigationMenuItem key={item.toLowerCase()} className="mx-0 px-0">
+                  {["about", "awards", "resume", "contact"].map((item) => (
+                    <NavigationMenuItem key={item} className="mx-0 px-0">
                       <NavigationMenuLink asChild>
                         <Link 
-                          href={`/${item.toLowerCase()}`}
-                          onClick={() => setActiveItem(item.toLowerCase())}
+                          href={`/${item}`}
+                          onClick={() => setActiveItem(item)}
                           className="!px-[12px] text-[15px] leading-[150%] font-normal text-[#343a3f] transition-colors duration-200 h-[36px] flex items-center justify-center !rounded-[12px] bg-white hover:!bg-[#fafafa] mx-0"
                         >
-                          {item}
+                          {t(item)}
                         </Link>
                       </NavigationMenuLink>
                     </NavigationMenuItem>
@@ -65,7 +67,7 @@ export default function Home() {
                   {/* For the "More" dropdown trigger */}
                   <NavigationMenuItem className="mx-0 px-0">
                     <NavigationMenuTrigger className="!px-[12px] text-[15px] leading-[150%] font-normal text-[#343a3f] transition-colors duration-200 h-[36px] flex items-center justify-center !rounded-[12px] bg-white hover:!bg-[#fafafa] mx-0">
-                      More
+                      {t('more')}
                     </NavigationMenuTrigger>
                     <NavigationMenuContent className="bg-white p-4 rounded-[12px] shadow-md">
                       <div className="grid gap-4 w-[350px]">
@@ -79,7 +81,7 @@ export default function Home() {
                             <div className="flex items-start gap-3">
                               <span className="text-xl">📝</span>
                               <div>
-                                <h3 className="text-[15px] font-medium text-[#343a3f] mb-1">Writing</h3>
+                                <h3 className="text-[15px] font-medium text-[#343a3f] mb-1">{t('writing')}</h3>
                                 <p className="text-[13px] text-[#697077] leading-tight">
                                   Articles on UX, product design, and the messy middle — ideas, tools, and case studies to sharpen your process.
                                 </p>
@@ -98,7 +100,7 @@ export default function Home() {
                             <div className="flex items-start gap-3">
                               <span className="text-xl">🤝</span>
                               <div>
-                                <h3 className="text-[15px] font-medium text-[#343a3f] mb-1">Volunteering</h3>
+                                <h3 className="text-[15px] font-medium text-[#343a3f] mb-1">{t('volunteering')}</h3>
                                 <p className="text-[13px] text-[#697077] leading-tight">
                                   Designing for good — tools, apps, and projects that uplift communities and create meaningful impact.
                                 </p>
@@ -117,7 +119,7 @@ export default function Home() {
                             <div className="flex items-start gap-3">
                               <span className="text-xl">💬</span>
                               <div>
-                                <h3 className="text-[15px] font-medium text-[#343a3f] mb-1">Testimonials</h3>
+                                <h3 className="text-[15px] font-medium text-[#343a3f] mb-1">{t('testimonials')}</h3>
                                 <p className="text-[13px] text-[#697077] leading-tight">
                                   Mentor and team feedback on how I work, grow, and contribute — unfiltered and full of context.
                                 </p>
@@ -139,7 +141,7 @@ export default function Home() {
               onClick={handleCopyEmail}
               className="font-[family-name:var(--font-geist-sans)] text-[15px] leading-[150%] bg-white text-[#697077] border border-[#f4f4f4] font-normal hover:bg-[#fafafa] hover:text-[#343a3f] hover:border-[#fafafa] transition-all duration-200 h-[36px] p-0 px-[12px] flex items-center justify-center shadow-none rounded-[12px] overflow-hidden cursor-pointer"
             >
-              <span className="inline-flex items-center justify-center">Copy email</span>
+              <span className="inline-flex items-center justify-center">{t('copyEmail')}</span>
             </Button>
             <LanguageSwitcher />
           </div>
