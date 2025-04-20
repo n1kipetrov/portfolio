@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-const locales = ['en', 'ru']
-const defaultLocale = 'en'
+const locales = ['en', 'ru'] as const;
+type Locale = typeof locales[number];
+const defaultLocale = 'en';
 
 // Define pages that should check for the /ru prefix
 function getProtectedRoutes() {
@@ -49,7 +50,7 @@ export function middleware(request: NextRequest) {
   let locale = defaultLocale
   const storedLocale = request.cookies.get('language')?.value
   
-  if (storedLocale && locales.includes(storedLocale as any)) {
+  if (storedLocale && locales.includes(storedLocale as Locale)) {
     locale = storedLocale
   } else {
     // Check for preferred language in the Accept-Language header
@@ -62,12 +63,25 @@ export function middleware(request: NextRequest) {
     }
   }
 
-  // If locale isn't the default one, redirect to locale-prefixed URL
+  // Store the detected locale in a response cookie for client access
+  const response = NextResponse.next()
   if (locale !== defaultLocale) {
+    // Set response cookie for the detected locale (useful for client-side)
+    response.cookies.set('language', locale, { 
+      path: '/', 
+      maxAge: 31536000 // 1 year
+    })
+    // Redirect to locale-prefixed URL for non-default locale
     return NextResponse.redirect(new URL(`/${locale}${pathname}`, request.url))
   }
 
-  return NextResponse.next()
+  // Set the cookie for the default locale as well
+  response.cookies.set('language', locale, { 
+    path: '/', 
+    maxAge: 31536000 // 1 year
+  })
+  
+  return response
 }
 
 export const config = {

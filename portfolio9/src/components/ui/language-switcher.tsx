@@ -5,11 +5,19 @@ import { useLocalization } from "@/lib/localization/LocalizationContext";
 import { cn } from "@/lib/utils";
 
 export default function LanguageSwitcher() {
-  const { language, setLanguage } = useLocalization();
+  const { language, setLanguage, isLoading } = useLocalization();
   
   const handleLanguageChange = (value: string) => {
     setLanguage(value as "en" | "ru");
-    localStorage.setItem("language", value);
+    
+    // Safely set localStorage
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem("language", value);
+      } catch (error) {
+        console.error("Error setting language in localStorage:", error);
+      }
+    }
   };
 
   return (
@@ -21,12 +29,14 @@ export default function LanguageSwitcher() {
       <TabsList className="h-[36px] rounded-[12px] bg-[#fafafa] shadow-none border-0 ring-0 ring-offset-0 !shadow-none p-[2px]">
         <TabsTrigger 
           value="en" 
+          disabled={isLoading}
           className="text-[15px] font-normal leading-[150%] rounded-[10px] h-[32px] py-0 px-[10px] data-[state=active]:bg-white data-[state=active]:text-[#343a3f] text-[#697077] shadow-none border-0 ring-0 ring-offset-0 !shadow-none"
         >
           EN
         </TabsTrigger>
         <TabsTrigger 
           value="ru" 
+          disabled={isLoading}
           className="text-[15px] font-normal leading-[150%] rounded-[10px] h-[32px] py-0 px-[10px] data-[state=active]:bg-white data-[state=active]:text-[#343a3f] text-[#697077] shadow-none border-0 ring-0 ring-offset-0 !shadow-none"
         >
           RU

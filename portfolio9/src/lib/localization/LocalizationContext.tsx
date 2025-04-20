@@ -16,7 +16,7 @@ type TranslationItem = {
   label: LocaleString;
 };
 
-type Translations = {
+export type Translations = {
   [key: string]: LocaleString;
 };
 
@@ -29,13 +29,26 @@ type LocalizationContextType = {
 
 const LocalizationContext = createContext<LocalizationContextType | undefined>(undefined);
 
-export const LocalizationProvider = ({ children }: { children: React.ReactNode }) => {
+export const LocalizationProvider = ({ 
+  children,
+  initialTranslations = {} 
+}: { 
+  children: React.ReactNode;
+  initialTranslations?: Translations;
+}) => {
   const [language, setLanguage] = useState<Language>("en");
-  const [translations, setTranslations] = useState<Translations>({});
-  const [isLoading, setIsLoading] = useState(true);
+  const [translations, setTranslations] = useState<Translations>(initialTranslations);
+  // Skip loading state if we have initial translations
+  const [isLoading, setIsLoading] = useState(!Object.keys(initialTranslations).length);
+  const [isMounted, setIsMounted] = useState(false);
   
   const pathname = usePathname();
   const router = useRouter();
+
+  // Set mounted state
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // Detect language from URL
   useEffect(() => {
@@ -53,14 +66,22 @@ export const LocalizationProvider = ({ children }: { children: React.ReactNode }
 
   // This function now handles changing the URL as well
   const handleLanguageChange = (lang: Language) => {
-    // Set cookie for middleware to use
-    document.cookie = `language=${lang}; path=/; max-age=31536000`; // 1 year
+    // Set cookie for middleware to use (only in browser)
+    if (typeof document !== 'undefined') {
+      document.cookie = `language=${lang}; path=/; max-age=31536000`; // 1 year
+    }
     
     // Update local state
     setLanguage(lang);
     
-    // Update localStorage for backward compatibility
-    localStorage.setItem("language", lang);
+    // Update localStorage for backward compatibility (only in browser)
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem("language", lang);
+      } catch (error) {
+        console.error("Failed to access localStorage:", error);
+      }
+    }
     
     // Update URL if needed
     if (pathname) {
@@ -85,8 +106,13 @@ export const LocalizationProvider = ({ children }: { children: React.ReactNode }
     }
   };
 
-  // Fetch translations
+  // Fetch translations only if we don't have initial translations
   useEffect(() => {
+    if (Object.keys(initialTranslations).length > 0) {
+      // Skip fetching if we already have translations
+      return;
+    }
+
     const fetchTranslations = async () => {
       setIsLoading(true);
       try {
@@ -119,17 +145,24 @@ export const LocalizationProvider = ({ children }: { children: React.ReactNode }
     };
 
     fetchTranslations();
-  }, []);
+  }, [initialTranslations]);
 
   // Check localStorage on initial load (client-side only)
   useEffect(() => {
-    const savedLanguage = localStorage.getItem("language") as Language;
-    if (savedLanguage && (savedLanguage === "en" || savedLanguage === "ru")) {
-      if (language !== savedLanguage) {
-        handleLanguageChange(savedLanguage);
+    if (isMounted && typeof window !== 'undefined') {
+      try {
+        const savedLanguage = localStorage.getItem("language") as Language;
+        if (savedLanguage && (savedLanguage === "en" || savedLanguage === "ru")) {
+          if (language !== savedLanguage) {
+            handleLanguageChange(savedLanguage);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to access localStorage:", error);
       }
     }
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isMounted]);
 
   const t = (key: string): string => {
     if (!translations[key]) {

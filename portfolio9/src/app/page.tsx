@@ -11,14 +11,16 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-  navigationMenuTriggerStyle
+  // Commenting out as it's not used
+  // navigationMenuTriggerStyle
 } from "@/components/ui/navigation-menu";
 import LanguageSwitcher from "@/components/ui/language-switcher";
 import { useLocalization } from "@/lib/localization/LocalizationContext";
 import { getLocalizedPath } from "@/lib/localization/helpers";
+import LoadingSpinner from "@/components/ui/loading";
 
 export default function Home() {
-  const { t, isLoading, language } = useLocalization();
+  const { t, language, isLoading } = useLocalization();
   const [activeItem, setActiveItem] = useState("work");
   
   const handleCopyEmail = () => {
@@ -27,6 +29,11 @@ export default function Home() {
       description: "design@nikipetrov.com is on your clipboard — now go make something cool happen."
     });
   };
+
+  // Show loading spinner when translations are loading
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -39,7 +46,7 @@ export default function Home() {
             <div className="flex mr-[32px]">
               <Link
                 href={getLocalizedPath("/", language)}
-                className="text-[15px] leading-[150%] transition-colors duration-200 h-[36px] flex items-center justify-center px-[12px] rounded-[12px] font-normal text-[#343a3f] bg-white hover:bg-[#fafafa]"
+                className={`text-[15px] leading-[150%] transition-colors duration-200 h-[36px] flex items-center justify-center px-[12px] rounded-[12px] font-normal ${activeItem === "home" ? "bg-[#fafafa] text-[#000]" : "text-[#343a3f] bg-white hover:bg-[#fafafa]"}`}
                 onClick={() => setActiveItem("home")}
               >
                 Nikita Petrov
@@ -57,7 +64,7 @@ export default function Home() {
                         <Link 
                           href={getLocalizedPath(`/${item}`, language)}
                           onClick={() => setActiveItem(item)}
-                          className="!px-[12px] text-[15px] leading-[150%] font-normal text-[#343a3f] transition-colors duration-200 h-[36px] flex items-center justify-center !rounded-[12px] bg-white hover:!bg-[#fafafa] mx-0"
+                          className={`!px-[12px] text-[15px] leading-[150%] font-normal transition-colors duration-200 h-[36px] flex items-center justify-center !rounded-[12px] ${activeItem === item ? "bg-[#fafafa] text-[#000]" : "text-[#343a3f] bg-white hover:!bg-[#fafafa]"} mx-0`}
                         >
                           {t(item)}
                         </Link>
@@ -76,7 +83,7 @@ export default function Home() {
                         <NavigationMenuLink asChild>
                           <Link
                             href={getLocalizedPath("/writing", language)}
-                            className="block p-3 hover:!bg-[#fafafa] rounded-[8px] transition-colors duration-200"
+                            className={`block p-3 hover:!bg-[#fafafa] rounded-[8px] transition-colors duration-200 ${activeItem === "writing" ? "bg-[#f5f5f5]" : ""}`}
                             onClick={() => setActiveItem("writing")}
                           >
                             <div className="flex items-start gap-3">
@@ -95,7 +102,7 @@ export default function Home() {
                         <NavigationMenuLink asChild>
                           <Link
                             href={getLocalizedPath("/volunteering", language)}
-                            className="block p-3 hover:!bg-[#fafafa] rounded-[8px] transition-colors duration-200"
+                            className={`block p-3 hover:!bg-[#fafafa] rounded-[8px] transition-colors duration-200 ${activeItem === "volunteering" ? "bg-[#f5f5f5]" : ""}`}
                             onClick={() => setActiveItem("volunteering")}
                           >
                             <div className="flex items-start gap-3">
@@ -114,7 +121,7 @@ export default function Home() {
                         <NavigationMenuLink asChild>
                           <Link
                             href={getLocalizedPath("/testimonials", language)}
-                            className="block p-3 hover:!bg-[#fafafa] rounded-[8px] transition-colors duration-200"
+                            className={`block p-3 hover:!bg-[#fafafa] rounded-[8px] transition-colors duration-200 ${activeItem === "testimonials" ? "bg-[#f5f5f5]" : ""}`}
                             onClick={() => setActiveItem("testimonials")}
                           >
                             <div className="flex items-start gap-3">
